@@ -27,6 +27,5 @@ int main(void)
 		iNumber[idx2] = iTemp;
 	}
 
-
-	return 0;
+	
 }
