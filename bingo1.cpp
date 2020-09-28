@@ -42,7 +42,16 @@ int main(void)
 			cout << endl;
 		}
 
-		break;
+		cout << "숫자를 입력하세요(0 : 종료) : ";
+		int iInput;
+		cin >> iInput;
+		//예외처리를 먼저 한다 (종료상황)
+
+		if (iInput == 0)
+			break;
+		else if (iInput < 1 || iInput > 25)
+			continue;
+
 	}
 
 	return 0;
