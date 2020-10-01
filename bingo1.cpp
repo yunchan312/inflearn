@@ -9,6 +9,24 @@ enum AI_MODE
 	AM_HARD = 2
 };
 
+enum LINE_NUMBER
+{
+	LN_H1,
+	LN_H2,
+	LN_H3,
+	LN_H4,
+	LN_H5,
+
+	LN_V1,
+	LN_V2,
+	LN_V3,
+	LN_V4,
+	LN_V5,
+	
+	LN_LT,
+	LN_RT
+};
+
 int main(void)
 {
 	srand((unsigned int)time(0));
@@ -204,6 +222,139 @@ int main(void)
 			iInput = iNoneSelect[rand() % iNoneSelectCount];
 			break;
 		case AM_HARD:
+			//하드모드는 현재 숫자 중 빙고줄 완성 가능성이 가장 높은 줄을
+			//찾아서 그 줄에 있는 숫자 중 하나를 고름
+			int iLine=0;
+			int iStarCount=0;
+			int iSaveCount=0;
+
+			//가로 세로 라인 중 가장 *이 많은 줄을 찾아낸다.
+			for (int i = 0; i < 5; i++)
+			{
+				iStarCount = 0;
+				for (int j = 0; j < 5; j++)
+				{
+					if (iAINumber[i * 5 + j] == INT_MAX)
+						++iStarCount;
+
+				}
+
+				//별이 5개 미만이어야 빙고 줄이 아니고 기존에 가장 많은
+				// 라인의 별보다 커야 가장 별이 많은 라인이므로 라인을
+				// 교체해주고 저장된 별 수를 교체한다.
+				if (iStarCount < 5 && iSaveCount < iStarCount)
+				{
+					//여기는 가로 라인중 가장 별이 많은 라인을 체크하는 곳이다.
+					iLine = i;
+					iSaveCount = iStarCount;
+				}
+
+			}
+
+			//가로 라인 중 가장 별이 많은 라인은 이미 구했다.
+			// 이 값과 세로 라인들을 비교하여 별이 가장 많은 라인을 구한다.
+			for (int i = 0; i < 5; ++i)
+			{
+				iStarCount = 0;
+				for (int j = 0; j < 5; ++j)
+				{
+					if (iAINumber[j * 5 + i] == INT_MAX)
+						++iStarCount;
+				}
+
+				if (iStarCount < 5 && iSaveCount < iStarCount)
+				{
+					//세로라인은 5~9로 의미를 부여했다.
+					iLine = i + 5;
+					iSaveCount = iStarCount;
+				}
+			}
+
+			//왼쪽 오른쪽 대각선 체크
+			iStarCount = 0;
+			for (int i = 0; i < 25; i += 6)
+			{
+				if (iAINumber[i] == INT_MAX)
+					++iStarCount;
+			}
+			if (iStarCount < 5 && iSaveCount < iStarCount)
+			{
+				iLine = LN_LT;
+				iSaveCount = iStarCount;
+			}
+
+			//오른쪽 왼쪽 대각선 체크
+			for (int i = 0; i < 20; i += 4)
+			{
+				if (iAINumber[i] == INT_MAX)
+					++iStarCount;
+			}
+
+			if (iStarCount < 5 && iSaveCount < iStarCount)
+			{
+				iLine = LN_RT;
+				iSaveCount = iStarCount;
+			}
+
+			//모든 라인을 조사했으면 iLine에 가능성이 가장 높은 줄 번호가
+			//저장되었다.
+			//그 줄에 있는 별이 아닌 숫자 중 하나를 선택하게 한다.
+			//가로줄일 경우
+			if (iLine <= LN_H5)
+			{
+				//가로줄일 경우 iLine이 0-4의 값이다.
+				for (int i = 0; i < 5; ++i)
+				{
+					//현재 줄에서 별이 아닌 숫자를 찾아낸다
+					if (iAINumber[iLine * 5 + i] != INT_MAX)
+					{
+						iInput = iAINumber[iLine * 5 + i];
+						break;
+					}
+
+				}
+			}
+
+			//세로줄
+			else if (iLine <= LN_V5)
+			{
+				//iLine이 5-9
+				for (int i = 0; i < 5; i++)
+				{
+					if (iAINumber[i * 5 + (iLine - 5)] != INT_MAX)
+					{
+						iInput = iAINumber[i * 5 + (iLine - 5)];
+						break;
+					}
+				}
+			}
+
+			else if (iLine == LN_LT)
+			{
+				for (int i = 0; i < 25; i += 6)
+				{
+					if (iAINumber[i] != INT_MAX)
+					{
+						iInput = iAINumber[i];
+						break;
+					}
+
+				}
+			}
+
+			else if (iLine == LN_RT)
+			{
+				for (int i = 0; i < 20; i += 4)
+				{
+					if (iAINumber[i] != INT_MAX)
+					{
+						iInput = iAINumber[i];
+						break;
+					}
+
+				}
+			}
+
 			break;
 		}
 
